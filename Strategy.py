@@ -3,13 +3,20 @@ import Game
 
 class Strategy:
 
-    def __init__(self):
-        pass
+    def __init__(self, player: Player):
+        self.player = player
 
     def next_move(self):
-        self.myLastMove = Player.history[-1][0]
-        self.theirLastMove = Player.history[-1][1]
         pass
+
+    @property
+    def myLastMove(self):
+        return self.player.history[-1][0]
+
+    @property
+    def theirLastMove(self):
+        return self.player.history[-1][1]
+
 
 
 class AlwaysCooperate(Strategy):
@@ -39,7 +46,7 @@ class TitForTat(Strategy):
         self.name = 'TitForTat'
 
     def next_move(self):
-        if len(Player.history) < 1:
+        if len(player.history) < 1:
             return 'C'
         else:
             return self.theirLastMove

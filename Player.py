@@ -4,7 +4,6 @@ import Game
 class Player:
 
     playerCount = 0
-    playerList = []
 
     def __init__(self, strategy: Strategy, name=None):
 
@@ -13,8 +12,6 @@ class Player:
 
         # keep track of how many strategies there are
         Player.playerCount += 1
-        # add player to list of all players
-        Player.playerList.append(self)
 
         if name is None:
             self.name = "P{}".format(Player.playerCount)

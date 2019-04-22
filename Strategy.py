@@ -1,23 +1,18 @@
-import Player
-import Game
-
 class Strategy:
 
-    def __init__(self, player: Player):
-        self.player = player
-
-    def next_move(self):
+    def __init__(self):
         pass
 
-    @property
-    def myLastMove(self):
-        return self.player.history[-1][0]
+    def next_move(self, player_history):
+        pass
 
-    @property
-    def theirLastMove(self):
-        return self.player.history[-1][1]
-
-
+    # @property
+    # def myLastMove(self):
+    #     return self[-1][0]
+    #
+    # @property
+    # def theirLastMove(self):
+    #     return self[-1][1]
 
 class AlwaysCooperate(Strategy):
 
@@ -25,7 +20,7 @@ class AlwaysCooperate(Strategy):
         super().__init__()
         self.name = 'AlwaysCooperate'
 
-    def next_move(self):
+    def next_move(self, player_history):
         return 'C'
 
 
@@ -35,7 +30,7 @@ class AlwaysDefect(Strategy):
         super().__init__()
         self.name = 'AlwaysDefect'
 
-    def next_move(self):
+    def next_move(self, player_history):
         return 'D'
 
 
@@ -45,8 +40,8 @@ class TitForTat(Strategy):
         super().__init__()
         self.name = 'TitForTat'
 
-    def next_move(self):
-        if len(player.history) < 1:
-            return 'C'
+    def next_move(self, player_history):
+        if player_history:
+            return player_history[-1][1]
         else:
-            return self.theirLastMove
+            return 'C'

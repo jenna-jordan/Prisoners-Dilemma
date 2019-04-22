@@ -1,5 +1,5 @@
 import Strategy
-import Game
+
 
 class Player:
 
@@ -7,12 +7,9 @@ class Player:
 
     def __init__(self, strategy: Strategy, name=None):
 
-        # strategy must be a Strategy subclass
         self.strategy = strategy
 
-        # keep track of how many strategies there are
         Player.playerCount += 1
-
         if name is None:
             self.name = "P{}".format(Player.playerCount)
         else:
@@ -26,4 +23,8 @@ class Player:
 
         # Game-level stats
         self.history = []
+
+
+
+
 

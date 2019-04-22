@@ -1,6 +1,5 @@
 import random
 import Player
-import Strategy
 
 
 class Game:
@@ -33,9 +32,9 @@ class Game:
         assert T > R > P > S, "Payoffs must follow rule: T > R > P > S"
         return (T, R, P, S)
 
-    def flip(self):
+    def flip(self, play):
         """This flips the player's move from 'C' to 'D' or from 'D' to 'C', if called due to noise"""
-        if 'C':
+        if play == 'C':
             return 'D'
         else:
             return 'C'
@@ -44,8 +43,8 @@ class Game:
         """This plays through one round of the game.
         To be called once per round."""
         # get moves, as determined by each player's strategy
-        p1move = p1.next_move()
-        p2move = p2.next_move()
+        p1move = self.p1.strategy.next_move(self.p1.history)
+        p2move = self.p2.strategy.next_move(self.p2.history)
         roundMoves = (p1move, p2move)
 
         # add real moves to real history
@@ -55,16 +54,16 @@ class Game:
         T, R, P, S = self.payoffs
 
         # determine real payoff values, to be added to the player's real scores
-        if roundMoves is ('C', 'C'):
+        if roundMoves == ('C', 'C'):
             p1payoff = R
             p2payoff = R
-        elif roundMoves is ('D', 'D'):
+        elif roundMoves == ('D', 'D'):
             p1payoff = P
             p2payoff = P
-        elif roundMoves is ('C', 'D'):
+        elif roundMoves == ('C', 'D'):
             p1payoff = S
             p2payoff = T
-        elif roundMoves is ('D', 'C'):
+        elif roundMoves == ('D', 'C'):
             p1payoff = T
             p2payoff = S
         else:
@@ -90,17 +89,17 @@ class Game:
 
         # use noise to possibly flip moves (effects player's perceptions, not real score)
         if p1chance < self.noise:
-            p1PerMove = p1move.flip()
+            p1PerMove = self.flip(p1move)
         else:
             p1PerMove = p1move
 
         if p2chance < self.noise:
-            p2PerMove = p2move.flip()
+            p2PerMove = self.flip(p2move)
         else:
             p2PerMove = p2move
 
-        p1PerRound = (p1move, p2PerMove)
-        p2PerRound = (p2move, p1PerMove)
+        p1PerRound = (p1move, p2PerMove)  # P1's perceived history of the round
+        p2PerRound = (p2move, p1PerMove)  # P2's perceived history of the round
 
         self.p1History.append(p1PerRound)
         self.p2History.append(p2PerRound)
@@ -113,14 +112,14 @@ class Game:
         forP2 = self.p2History[-1]
 
         # send to players's history
-        p1.history.append(forP1)
-        p2.history.append(forP2)
+        self.p1.history.append(forP1)
+        self.p2.history.append(forP2)
 
     def play_game(self):
         """This plays through an entire game between two players, for the set number of rounds."""
         # reset player histories
-        p1.history = []
-        p2.history = []
+        self.p1.history = []
+        self.p2.history = []
 
         # play all rounds
         for r in range(self.rounds):
@@ -128,17 +127,17 @@ class Game:
             self.send_history()
 
         # send players their scores
-        p1.points += self.p1Score
-        p2.points += self.p2Score
+        self.p1.points += self.p1Score
+        self.p2.points += self.p2Score
 
         # send players their win/lose/tie results
         if self.p1Score == self.p2Score:
-            p1.ties += 1
-            p2.ties += 1
+            self.p1.ties += 1
+            self.p2.ties += 1
         elif self.p1Score > self.p2Score:
-            p1.wins += 1
-            p2.losses += 1
+            self.p1.wins += 1
+            self.p2.losses += 1
         elif self.p1Score < self.p2Score:
-            p1.losses += 1
-            p2.wins += 1
+            self.p1.losses += 1
+            self.p2.wins += 1
 

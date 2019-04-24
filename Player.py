@@ -7,7 +7,7 @@ class Player:
 
     def __init__(self, strategy: Strategy, name=None):
 
-        self.strategy = strategy
+        self.strategy = strategy()
 
         Player.playerCount += 1
         if name is None:
@@ -23,6 +23,20 @@ class Player:
 
         # Game-level stats
         self.history = []
+
+    @property
+    def myLastMove(self):
+        return self.history[-1][0]
+
+    @property
+    def theirLastMove(self):
+        return self.history[-1][1]
+
+    def has_recently_defected(self, pastrounds):
+        for round in self.history[-pastrounds:]:
+            if round[1] == 'D':
+                return True
+        return False
 
 
 

@@ -4,28 +4,47 @@ import Player
 
 class Game:
 
-    def __init__(self, p1: Player, p2: Player, rounds: int = 100, noise: float = 0, name: str = None):
+    gameCount = 0
+
+    def __init__(self, p1: Player, p2: Player, rounds=100, noise_growthMax=0.01, name: str = None):
         self.p1 = p1
         self.p2 = p2
         self.rounds = rounds
-        self.noise = noise
+        self.noise_growthMax = noise_growthMax
 
         # name the game based on participating players
         if name is None:
-            self.name = "{} v. {}".format(p1.name, p2.name)
+            self.name = "{} v. {}".format(self.p1.name, self.p2.name)
         else:
             self.name = name
+
+        # generate game ID
+        Game.gameCount += 1
+        self.id = Game.gameCount
 
         # keep track of real and perceived moves in the game
         self.realHistory = []
         self.p1History = []
         self.p2History = []
+
         # keep track of scores
         self.p1Score = 0
         self.p2Score = 0
 
+        # shortcut for player strategies
+        self.p1Strategy = self.p1.strategy.name
+        self.p2Strategy = self.p2.strategy.name
+
+        # keep track of final noise level
+        self.noise = self.set_noise()
+        self.noiseHistory = []
+
         # payoffs
         self.payoffs = self.set_payoffs()
+
+
+    def set_noise(self, max=0.5):
+        return random.uniform(0, max)
 
     def set_payoffs(self, T: int = 5, R: int = 3, P: int = 1, S: int = 0):
         """This sets the payoffs for the game, determining how many points each player gets per round."""
@@ -43,8 +62,8 @@ class Game:
         """This plays through one round of the game.
         To be called once per round."""
         # get moves, as determined by each player's strategy
-        p1move = self.p1.strategy.next_move(self.p1.history)
-        p2move = self.p2.strategy.next_move(self.p2.history)
+        p1move = self.p1.strategy.next_move(self.p1)
+        p2move = self.p2.strategy.next_move(self.p2)
         roundMoves = (p1move, p2move)
 
         # add real moves to real history
@@ -74,18 +93,24 @@ class Game:
 
         # account for noise, then add perceived moves to perceived history
 
-        p1chance = random.random() # a value between 0 and 1
-        p2chance = random.random() # a different value between 0 and 1
+        # add current noise to noise history
+        self.noiseHistory.append(self.noise)
 
-        # increase noise if defection occured
+        # generate random value for each player to be compared to the noise
+        p1chance = random.random()  # a value between 0 and 1
+        p2chance = random.random()  # a different value between 0 and 1
+
+        # increase noise if defection occurred
         if roundMoves is ('D', 'D'):
-            noiseIncrementor = random.uniform(0, 0.2) # more noise for more defection
+            noiseIncrementor = random.uniform(0, self.noise_growthMax * 2)  # more noise for more defection
         elif 'D' in roundMoves:
-            noiseIncrementor = random.uniform(0, 0.1) # if only one player defects
+            noiseIncrementor = random.uniform(0, self.noise_growthMax)  # if only one player defects
         else:
             noiseIncrementor = 0
 
         self.noise += noiseIncrementor
+        if self.noise > 0.5:
+            self.noise = 0.5
 
         # use noise to possibly flip moves (effects player's perceptions, not real score)
         if p1chance < self.noise:

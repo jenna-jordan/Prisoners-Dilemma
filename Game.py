@@ -6,15 +6,22 @@ class Game:
 
     gameCount = 0
 
-    def __init__(self, p1: Player, p2: Player, rounds=100, noise_growthMax=0.01, name: str = None):
+    def __init__(self, p1: Player, p2: Player, rounds=100, noise_growthMax=0.01, noiseMax=0.5, name: str = None):
         self.p1 = p1
         self.p2 = p2
         self.rounds = rounds
-        self.noise_growthMax = noise_growthMax
+        self.noise_growthMax = noise_growthMax # must be between 0 and 1
+        self.noiseMax = noiseMax # must be between 0 and 1
+
+        # shortcut for player names & strategies
+        self.p1Name = self.p1.name
+        self.p2Name = self.p2.name
+        self.p1Strategy = self.p1.strategy.name
+        self.p2Strategy = self.p2.strategy.name
 
         # name the game based on participating players
         if name is None:
-            self.name = "{} v. {}".format(self.p1.name, self.p2.name)
+            self.name = "{} ({}) v. {} ({})".format(self.p1Name, self.p1Strategy, self.p2Name, self.p2Strategy)
         else:
             self.name = name
 
@@ -26,14 +33,11 @@ class Game:
         self.realHistory = []
         self.p1History = []
         self.p2History = []
+        self.gameHistory = []
 
         # keep track of scores
         self.p1Score = 0
         self.p2Score = 0
-
-        # shortcut for player strategies
-        self.p1Strategy = self.p1.strategy.name
-        self.p2Strategy = self.p2.strategy.name
 
         # keep track of final noise level
         self.noise = self.set_noise()
@@ -41,10 +45,22 @@ class Game:
 
         # payoffs
         self.payoffs = self.set_payoffs()
+        self.implementNoise = self.set_mode()
 
 
     def set_noise(self, max=0.5):
+        """This sets the starting noise level - a random value between 0 and the max (default .5)"""
         return random.uniform(0, max)
+
+    def set_mode(self, mode='I'):
+        """Determines whether payoffs are determined by a player's actual moves (misperception) or the moves
+        possibly changed by noise (misimplementation)"""
+        if mode in ['misperception', 'P', 'p']:
+            return False
+        elif mode in ['misimplementation', 'I', 'i']:
+            return True
+        else:
+            raise Exception("Mode must be 'P' for 'misperception', or 'I' for 'misimplementation'.")
 
     def set_payoffs(self, T: int = 5, R: int = 3, P: int = 1, S: int = 0):
         """This sets the payoffs for the game, determining how many points each player gets per round."""
@@ -59,39 +75,17 @@ class Game:
             return 'C'
 
     def play_round(self):
-        """This plays through one round of the game.
-        To be called once per round."""
+        """This plays through one round of the game. To be called once per round."""
         # get moves, as determined by each player's strategy
         p1move = self.p1.strategy.next_move(self.p1)
         p2move = self.p2.strategy.next_move(self.p2)
-        roundMoves = (p1move, p2move)
+
+        realMoves = (p1move, p2move)
 
         # add real moves to real history
-        self.realHistory.append(roundMoves)
+        self.realHistory.append(realMoves)
 
-        # get payoff values, either default or those specified when set_payoffs() is called
-        T, R, P, S = self.payoffs
-
-        # determine real payoff values, to be added to the player's real scores
-        if roundMoves == ('C', 'C'):
-            p1payoff = R
-            p2payoff = R
-        elif roundMoves == ('D', 'D'):
-            p1payoff = P
-            p2payoff = P
-        elif roundMoves == ('C', 'D'):
-            p1payoff = S
-            p2payoff = T
-        elif roundMoves == ('D', 'C'):
-            p1payoff = T
-            p2payoff = S
-        else:
-            print("Invalid move(s) made, choose 'C' or 'D'.")
-
-        self.p1Score += p1payoff
-        self.p2Score += p2payoff
-
-        # account for noise, then add perceived moves to perceived history
+        # account for noise
 
         # add current noise to noise history
         self.noiseHistory.append(self.noise)
@@ -101,18 +95,23 @@ class Game:
         p2chance = random.random()  # a different value between 0 and 1
 
         # increase noise if defection occurred
-        if roundMoves is ('D', 'D'):
+        if realMoves is ('D', 'D'):
             noiseIncrementor = random.uniform(0, self.noise_growthMax * 2)  # more noise for more defection
-        elif 'D' in roundMoves:
+        elif 'D' in realMoves:
             noiseIncrementor = random.uniform(0, self.noise_growthMax)  # if only one player defects
         else:
-            noiseIncrementor = 0
+            noiseIncrementor = (random.uniform(0, self.noise_growthMax)) * -1  # if both cooperate, reduce noise
 
+        # increment noise, make sure noise stays between 0 and max
         self.noise += noiseIncrementor
-        if self.noise > 0.5:
-            self.noise = 0.5
+        if self.noise > self.noiseMax:
+            self.noise = self.noiseMax
+        elif self.noise < 0:
+            self.noise = 0
+        else:
+            self.noise = self.noise
 
-        # use noise to possibly flip moves (effects player's perceptions, not real score)
+        # use noise to possibly flip moves
         if p1chance < self.noise:
             p1PerMove = self.flip(p1move)
         else:
@@ -128,6 +127,39 @@ class Game:
 
         self.p1History.append(p1PerRound)
         self.p2History.append(p2PerRound)
+
+        # moves (potentially altered by noise) that will determine payoffs
+        noisyMoves = (p1PerMove, p2PerMove)
+        self.gameHistory.append(noisyMoves)
+
+        # get payoff values, either default or those specified when set_payoffs() is called
+        T, R, P, S = self.payoffs
+
+        # use game mode to determine if real moves or noisy moves are used to award payoffs
+        if self.implementNoise:
+            moves = noisyMoves
+        else:
+            moves = realMoves
+
+        # determine payoff values, to be added to the player's real scores
+        if moves == ('C', 'C'):
+            p1payoff = R
+            p2payoff = R
+        elif moves == ('D', 'D'):
+            p1payoff = P
+            p2payoff = P
+        elif moves == ('C', 'D'):
+            p1payoff = S
+            p2payoff = T
+        elif moves == ('D', 'C'):
+            p1payoff = T
+            p2payoff = S
+        else:
+            raise Exception("Invalid move(s) made, choose 'C' or 'D'.")
+
+        self.p1Score += p1payoff
+        self.p2Score += p2payoff
+
 
     def send_history(self):
         """This sends the perceived moves to each player's own known history of the game.
@@ -152,8 +184,8 @@ class Game:
             self.send_history()
 
         # send players their scores
-        self.p1.points += self.p1Score
-        self.p2.points += self.p2Score
+        self.p1.points += self.p1Score / self.rounds
+        self.p2.points += self.p2Score / self.rounds
 
         # send players their win/lose/tie results
         if self.p1Score == self.p2Score:

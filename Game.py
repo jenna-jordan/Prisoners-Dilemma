@@ -130,7 +130,6 @@ class Game:
 
         # moves (potentially altered by noise) that will determine payoffs
         noisyMoves = (p1PerMove, p2PerMove)
-        self.gameHistory.append(noisyMoves)
 
         # get payoff values, either default or those specified when set_payoffs() is called
         T, R, P, S = self.payoffs
@@ -157,8 +156,13 @@ class Game:
         else:
             raise Exception("Invalid move(s) made, choose 'C' or 'D'.")
 
+        # increment player scores
         self.p1Score += p1payoff
         self.p2Score += p2payoff
+
+        # send moves used to determine payoffs to game history
+        self.gameHistory.append(moves)
+
 
 
     def send_history(self):

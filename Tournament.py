@@ -21,13 +21,14 @@ def create_playerlist(strategies: dict):
 
 
 # function to play tournament and generate list of all game objects
-def play_tournament(players, numrounds=100, noisegrowth=0.01, noisemax=0.5):
+def play_tournament(players, numrounds=100, noisegrowth=0.01, noisemax=0.5, mode='I'):
     """
     Play a tournament in which each player plays a game against every other player.
     :param players: a dictionary of form {'playername': playerObject}
     :param numrounds: number of rounds played for each game
     :param noisegrowth: maximum amount noise can grow/reduce each round
     :param noisemax: maximum level of noise in game
+    :param mode: set mode of game to misimplementation (I) or misperception (P)
     :return: a list of all players, each player has a dict with id and stats
     """
 
@@ -45,6 +46,7 @@ def play_tournament(players, numrounds=100, noisegrowth=0.01, noisemax=0.5):
                 otherplayer = players[p2]
 
             game = Game.Game(thisplayer, otherplayer, numrounds, noisegrowth, noisemax)
+            game.set_mode(mode)
             game.play_game()
             games.append(game)
 

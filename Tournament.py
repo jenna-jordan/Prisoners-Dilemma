@@ -93,10 +93,10 @@ def play_tournament(players, numrounds=100, noisegrowth=0.01, noisemax=0.5):
         playerdict = {}
         playerdict['id'] = player.name
         playerdict['strategy'] = player.strategy.id
-        playerdict['score'] = player.points / len(games)
-        playerdict['wins'] = player.wins
-        playerdict['losses'] = player.losses
-        playerdict['ties'] = player.ties
+        playerdict['scoreAvg'] = player.points / len(games)
+        playerdict['winRate'] = player.wins / len(games)
+        playerdict['lossRate'] = player.losses / len(games)
+        playerdict['tieRate'] = player.ties / len(games)
 
         players.append(playerdict)
 

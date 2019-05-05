@@ -44,7 +44,17 @@ allStrategiesRand = {Strategy.AlwaysCooperate: random.randint(2, 5),
 
 allStrategiesRandom = create_playerlist(allStrategiesRand)
 
-def run_MCsim(players, times=1000, filename='results', numrounds=100, noisegrowth=0.01, noisemax=0.5, mode='I'):
+def run_MCsim(players: dict, times=1000, filename='results', numrounds=100, noisegrowth=0.01, noisemax=0.5, mode='I'):
+    """
+    run the monte carlo simulation and export the results to a csv file
+    :param players: players that will be in each tournament
+    :param times: how many times the tournament will be run
+    :param filename: name of the csv file results will be exported to - don't include '.csv'
+    :param numrounds: number of rounds played in each game
+    :param noisegrowth: max noise increment
+    :param noisemax: max noise per game
+    :param mode: game calculates scores based on real plays (misperception, 'P') or noisy plays (misimplementation, 'I')
+    """
     tCount = 0
     AllTournamentStats = []
     for t in range(times):

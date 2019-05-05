@@ -28,6 +28,7 @@ class Player:
         self.defectionCountdown = 0
         self.cooperationCountdown = 0
         self.defectionCount = 0
+        self.cooperationCount = 0
 
 
     @property

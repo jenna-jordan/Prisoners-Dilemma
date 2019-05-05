@@ -16,8 +16,8 @@ class Game:
         # shortcut for player names & strategies
         self.p1Name = self.p1.name
         self.p2Name = self.p2.name
-        self.p1Strategy = self.p1.strategy.name
-        self.p2Strategy = self.p2.strategy.name
+        self.p1Strategy = self.p1.strategy.id
+        self.p2Strategy = self.p2.strategy.id
 
         # name the game based on participating players
         if name is None:
@@ -65,6 +65,7 @@ class Game:
     def set_payoffs(self, T: int = 5, R: int = 3, P: int = 1, S: int = 0):
         """This sets the payoffs for the game, determining how many points each player gets per round."""
         assert T > R > P > S, "Payoffs must follow rule: T > R > P > S"
+        assert 2*R > T + S, "Payoffs must follow rule: 2*R > T + S"
         return (T, R, P, S)
 
     def flip(self, play):

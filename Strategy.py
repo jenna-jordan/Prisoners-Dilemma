@@ -14,6 +14,12 @@ class Strategy:
     def next_move(self, player):
         pass
 
+def flip(play):
+    """This flips the player's move from 'C' to 'D' or from 'D' to 'C', if called due to noise"""
+    if play == 'C':
+         return 'D'
+    else:
+         return 'C'
 
 # Basic Strategies
 
@@ -113,7 +119,13 @@ class FirmButFair(Strategy):
         self.id = 'FBF'
 
     def next_move(self, player):
-        #TODO
+        if player.history:
+            if player.theirLastMove == 'D' and player.myLastMove == 'C':
+                return 'D'
+            else:
+                return 'C'
+        else:
+            return 'C'
 
 
 class SuspiciousTitForTat(Strategy):
@@ -124,7 +136,10 @@ class SuspiciousTitForTat(Strategy):
         self.id = 'STFT'
 
     def next_move(self, player):
-        #TODO
+        if player.history:
+            return player.theirLastMove
+        else:
+            return 'D'
 
 
 class HardTitForTat(Strategy):
@@ -136,7 +151,13 @@ class HardTitForTat(Strategy):
         self.id = 'HTFT'
 
     def next_move(self, player):
-        #TODO
+        if player.history:
+            if player.has_recently_defected(3):
+                return 'D'
+            else:
+                return 'C'
+        else:
+            return 'C'
 
 
 class ReverseTitForTat(Strategy):
@@ -148,7 +169,10 @@ class ReverseTitForTat(Strategy):
         self.id = 'RTFT'
 
     def next_move(self, player):
-        #TODO
+        if player.history:
+            return flip(player.theirLastMove)
+        else:
+            return 'D'
 
 # Punishing Strategies
 
@@ -177,7 +201,24 @@ class SoftGrudger(Strategy):
         self.id = 'SGRIM'
 
     def next_move(self, player):
-        #TODO
+        if player.history:
+            if player.defectionCountdown:
+                player.defectionCountdown -= 1
+                return 'D'
+            elif player.cooperationCountdown:
+                player.cooperationCountdown -= 1
+                return 'C'
+            elif player.theirLastMove == 'D':
+                player.defectionCountdown = 3
+                player.cooperationCountdown = 2
+                return 'D'
+            else:
+                return 'C'
+        else:
+            player.defectionCountdown = 0
+            player.cooperationCountdown = 0
+            return 'C'
+
 
 class Gradual(Strategy):
     """Cooperates on the first move, and cooperates as long as the opponent cooperates.
@@ -198,18 +239,15 @@ class Gradual(Strategy):
                     player.defectionCount += 1
                     player.defectionCountdown = player.defectionCount
                     player.cooperationCountdown = 2
-                    print(player.defectionCount, "# defects")
                 elif player.theirLastMove == 'C':
                     return 'C'
 
             # when 'D' punishment is in effect
             if player.defectionCountdown:
-                print(player.defectionCountdown, '# defects left')
                 player.defectionCountdown -= 1
                 return 'D'
             # two 'C' forgiveness
             else:
-                print(player.cooperationCountdown, '# coops left')
                 player.cooperationCountdown -= 1
                 return 'C'
 
@@ -233,7 +271,13 @@ class Pavlov(Strategy):
         self.id = 'PAV'
 
     def next_move(self, player):
-        #TODO
+        if player.history:
+            if player.theirLastMove == 'C':
+                return player.myLastMove
+            else:
+                return flip(player.myLastMove)
+        else:
+            return 'C'
 
 
 class SoftMajority(Strategy):
@@ -245,7 +289,20 @@ class SoftMajority(Strategy):
         self.id = 'SM'
 
     def next_move(self, player):
-        #TODO
+        if player.history:
+            if player.theirLastMove == 'D':
+                player.defectionCount += 1
+            else:
+                player.cooperationCount += 1
+
+            if player.cooperationCount >= player.defectionCount:
+                return 'C'
+            else:
+                return 'D'
+        else:
+            player.cooperationCount = 0
+            player.defectionCount = 0
+            return 'C'
 
 
 class HardMajority(Strategy):
@@ -257,4 +314,17 @@ class HardMajority(Strategy):
         self.id = 'HM'
 
     def next_move(self, player):
-        #TODO
+        if player.history:
+            if player.theirLastMove == 'D':
+                player.defectionCount += 1
+            else:
+                player.cooperationCount += 1
+
+            if player.defectionCount >= player.cooperationCount:
+                return 'D'
+            else:
+                return 'C'
+        else:
+            player.cooperationCount = 0
+            player.defectionCount = 0
+            return 'D'

@@ -30,6 +30,7 @@ def play_tournament(players, numrounds=100, noisegrowth=0.01, noisemax=0.5):
     :param noisemax: maximum level of noise in game
     :return: a list of all players, each player has a dict with id and stats
     """
+
     games = []
 
     # play the tournament
@@ -47,17 +48,24 @@ def play_tournament(players, numrounds=100, noisegrowth=0.01, noisemax=0.5):
             game.play_game()
             games.append(game)
 
+    numgames = len(players) - 1
     # collect the stats on each player
     allplayers = []
     for player in players.values():
         playerdict = {}
         playerdict['id'] = player.name
         playerdict['strategy'] = player.strategy.id
-        playerdict['scoreAvg'] = player.points / len(games)
-        playerdict['winRate'] = player.wins / len(games)
-        playerdict['lossRate'] = player.losses / len(games)
-        playerdict['tieRate'] = player.ties / len(games)
+        playerdict['scoreAvg'] = player.points / numgames
+        playerdict['winRate'] = player.wins / numgames
+        playerdict['lossRate'] = player.losses / numgames
+        playerdict['tieRate'] = player.ties / numgames
 
         allplayers.append(playerdict)
+
+        # reset stats for each player
+        player.points = 0
+        player.wins = 0
+        player.losses = 0
+        player.ties = 0
 
     return allplayers

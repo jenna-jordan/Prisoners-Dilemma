@@ -1,9 +1,37 @@
 import random
 import Player
+import Strategy
 
 
 class Game:
+    """Game class - two Players compete for a set number of rounds. The player with the most points wins.
 
+    >>> p1 = Player.Player(strategy=Strategy.AlwaysCooperate)
+    >>> p2 = Player.Player(strategy=Strategy.AlwaysDefect)
+    >>> g1 = Game(p1, p2, noiseMax=0)
+    >>> g1.p1Strategy
+    'AllC'
+    >>> g1.p2Strategy
+    'AllD'
+    >>> g1.set_mode('I')
+    True
+    >>> g1.set_mode('mis')
+    Traceback (most recent call last):
+    Exception: Mode must be 'P' for 'misperception', or 'I' for 'misimplementation'.
+    >>> g1.set_payoffs(1, 1, 1, 1)
+    Traceback (most recent call last):
+    AssertionError: Payoffs must follow rule: T > R > P > S
+    >>> g1.set_payoffs(10, 5, 3, 1)
+    Traceback (most recent call last):
+    AssertionError: Payoffs must follow rule: 2*R > T + S
+    >>> g1.set_noise(0)
+    0.0
+    >>> g1.play_game()
+    >>> g1.gameHistory[0]
+    ('C', 'D')
+    >>> len(g1.gameHistory)
+    100
+    """
     gameCount = 0
 
     def __init__(self, p1: Player, p2: Player, rounds=100, noise_growthMax=0.01, noiseMax=0.5, name: str = None):

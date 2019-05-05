@@ -15,7 +15,13 @@ class Strategy:
         pass
 
 def flip(play):
-    """This flips the player's move from 'C' to 'D' or from 'D' to 'C', if called due to noise"""
+    """This flips the player's move from 'C' to 'D' or from 'D' to 'C', if called due to noise
+
+    >>> flip('C')
+    'D'
+    >>> flip('D')
+    'C'
+    """
     if play == 'C':
          return 'D'
     else:

@@ -1,5 +1,3 @@
-import random
-
 import Game
 import Player
 import Strategy
@@ -7,8 +5,15 @@ import Strategy
 
 # function to create player list out of how many times each strategy should appear
 def create_playerlist(strategies: dict):
-    """Create a dictionary consisting of form {playername: playerObject},
-    based on dictionary of form {Strategy.strategyname: #PlayersPerStrategy}"""
+    """Generate a list of players based on some number of each strategy
+    :param strategies: dictionary of form {Strategy.strategyname: #PlayersPerStrategy}
+    :return: dictionary consisting of form {playername: playerObject}
+
+    >>> stratlist = {Strategy.AlwaysCooperate: 2, Strategy.AlwaysDefect: 2}
+    >>> playerlist = create_playerlist(stratlist)
+    >>> len(playerlist)
+    4
+    """
 
     players = {}
 
@@ -30,6 +35,12 @@ def play_tournament(players, numrounds=100, noisegrowth=0.01, noisemax=0.5, mode
     :param noisemax: maximum level of noise in game
     :param mode: set mode of game to misimplementation (I) or misperception (P)
     :return: a list of all players, each player has a dict with id and stats
+
+    >>> stratlist = {Strategy.AlwaysCooperate: 2, Strategy.AlwaysDefect: 2}
+    >>> playerlist = create_playerlist(stratlist)
+    >>> t = play_tournament(playerlist)
+    >>> len(t)
+    4
     """
 
     games = []

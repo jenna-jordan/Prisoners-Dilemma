@@ -2,7 +2,7 @@ import Strategy
 
 
 class Player:
-
+    """Player class - uses one strategy to compete in games."""
     playerCount = 0
 
     def __init__(self, strategy: Strategy, name=None):

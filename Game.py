@@ -31,6 +31,10 @@ class Game:
     ('C', 'D')
     >>> len(g1.gameHistory)
     100
+    >>> g1.p1Score
+    0
+    >>> g1.p2Score
+    500
     """
     gameCount = 0
 

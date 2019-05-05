@@ -2,7 +2,21 @@ import Strategy
 
 
 class Player:
-    """Player class - uses one strategy to compete in games."""
+    """Player class - uses one strategy to compete in games.
+
+    >>> p1 = Player(strategy=Strategy.AlwaysCooperate)
+    >>> p1.name
+    'P1'
+    >>> p1.history = [('C', 'D')]
+    >>> p1.myLastMove
+    'C'
+    >>> p1.theirLastMove
+    'D'
+    >>> p1.has_recently_defected(1)
+    True
+    >>> p1.has_defected_for(1)
+    True
+    """
     playerCount = 0
 
     def __init__(self, strategy: Strategy, name=None):

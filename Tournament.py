@@ -36,11 +36,18 @@ def play_tournament(players, numrounds=100, noisegrowth=0.01, noisemax=0.5, mode
     :param mode: set mode of game to misimplementation (I) or misperception (P)
     :return: a list of all players, each player has a dict with id and stats
 
-    >>> stratlist = {Strategy.AlwaysCooperate: 2, Strategy.AlwaysDefect: 2}
+    >>> stratlist = {Strategy.AlwaysCooperate: 1, Strategy.AlwaysDefect: 1}
     >>> playerlist = create_playerlist(stratlist)
-    >>> t = play_tournament(playerlist)
+    >>> t = play_tournament(playerlist, noisemax=0)
     >>> len(t)
-    4
+    2
+    >>> p1 = t[0]
+    >>> p1['strategy']
+    'AllC'
+    >>> p1['winRate']
+    0.0
+    >>> p1['scoreAvg']
+    0.0
     """
 
     games = []

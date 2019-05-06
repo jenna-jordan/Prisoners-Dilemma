@@ -6,6 +6,8 @@ This project is a Monte Carlo analysis of the Prisoner's Dilemma, with reactive 
 
 Reactive noise refers to the fact that the noise level of the game adjusts according to player's moves. If a player defects, the noise level increases. If both players defect, it potentially increases even more. If both players cooperate, the noise level decreases.
 
+## Strategies
+
 The following strategies are used in this simulation:
 
 | ID    | Name                   | Description                                                                                                                                                                                                                                                                                           |
@@ -27,6 +29,8 @@ The following strategies are used in this simulation:
 | SM    | Soft Majority          | Cooperates on the first move, and cooperates as long as the number of times the opponent has cooperated is greater than or equal to the number of times it has defected, else it defects.                                                                                                             |
 | HM    | Hard Majority          | Defects on the first move, and defects if the number of defections of the opponentis greater than or equal to the number of times it has cooperated, else cooperates.                                                                                                                                 |
 
+## Project Structure
+
 These strategy descriptions can also be found in the table 'strategy_descriptions.csv'
 
 The classes needed to run the tournament are found in the following files:
@@ -35,10 +39,8 @@ The classes needed to run the tournament are found in the following files:
 - 'Player.py' = Player class, which uses the Strategy class
 - 'Game.py' = Game class, which uses the Player class
 
-The code for running a tournament is found in 'Tournament.py'
+The code for running a tournament and the monte carlo version is found in 'Tournament.py'
 
-The code for running the monte carlo simulation and generating the results (csv files) is found in 'montecarlo_simulation.py'
+Some initial results from the simulation are analyzed in the jupyter notebook 'analysis.ipynb'. *The analysis finds that the 'Soft Majority' strategy consistently has the most points.*
 
-The results from the simulation are analyzed in the jupyter notebook 'analysis.ipynb'
-
-The analysis finds that the 'Soft Majority' strategy consistently has the most points.
+####If you want to run your own tournament or monte carlo simulation, see the jupyter notebook 'Quick Start Guide.ipynb'

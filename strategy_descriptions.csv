@@ -15,4 +15,3 @@ GRAD,Gradual,"Cooperates on the first move, and cooperates as long as the oppone
 PAV,Pavlov,"Cooperates on the first move. If a reward or temptation payoff is received in the last round then repeats last choice, otherwise chooses the opposite choice."
 SM,Soft Majority,"Cooperates on the first move, and cooperates as long as the number of times the opponent has cooperated is greater than or equal to the number of times it has defected, else it defects."
 HM,Hard Majority,"Defects on the first move, and defects if the number of defections of the opponentis greater than or equal to the number of times it has cooperated, else cooperates."
-,,

@@ -43,4 +43,4 @@ The code for running a tournament and the monte carlo version is found in 'Tourn
 
 Some initial results from the simulation are analyzed in the jupyter notebook 'analysis.ipynb'. *The analysis finds that the 'Soft Majority' strategy consistently has the most points.*
 
-####If you want to run your own tournament or monte carlo simulation, see the jupyter notebook 'Quick Start Guide.ipynb'
+#### If you want to run your own tournament or monte carlo simulation, see the jupyter notebook 'Quick Start Guide.ipynb'
